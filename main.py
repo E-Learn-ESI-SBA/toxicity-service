@@ -4,8 +4,8 @@ from fastapi import FastAPI, HTTPException
 
 # Load model and tokenizer
 device = torch.device('cpu')
-model = BertForSequenceClassification.from_pretrained('./final/my_outputs', num_labels=2)
-tokenizer = BertTokenizer.from_pretrained('./final/my_outputs')
+model = BertForSequenceClassification.from_pretrained('RabehOmrani/toxicity', num_labels=2)
+tokenizer = BertTokenizer.from_pretrained('RabehOmrani/toxicity')
 
 # Create TextClassificationPipeline
 pipeline = TextClassificationPipeline(model=model, tokenizer=tokenizer)
@@ -32,7 +32,7 @@ async def classify_text_type(text: str, text_type: str):
             return {'label': label, 'score': score}
         elif text_type == 'comment':
             label, score = classify_text(text)
-            if label == 'non-toxic' and score < 0.7:
+            if label == 'non-toxic' and score < 0.65:
                 return {'label': 'toxic', 'score': score}
             else:
                 return {'label': 'non-toxic', 'score': score}
