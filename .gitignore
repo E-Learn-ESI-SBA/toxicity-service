@@ -1,0 +1,10 @@
+./final
+# Ignore compiled Python files
+*.pyc
+
+# Ignore virtual environment directory
+venv/
+.git
+# Ignore log files
+*.log
+./__pycache__
