@@ -1,11 +1,24 @@
+import torch
+from transformers import BertForSequenceClassification, BertTokenizer, TextClassificationPipeline
 from fastapi import FastAPI, HTTPException
-from . import classify_text
+
 # Load model and tokenizer
+device = torch.device('cpu')
+model_path = ''
+model = BertForSequenceClassification.from_pretrained(model_path, num_labels=2)
+tokenizer = BertTokenizer.from_pretrained(model_path)
 
+# Create TextClassificationPipeline
+pipeline = TextClassificationPipeline(model=model, tokenizer=tokenizer)
 
-
-
+# Initialize FastAPI app
 app = FastAPI()
+
+# Function to classify text based on toxicity threshold
+def classify_text(text):
+    classification_result = pipeline(text)[0]
+    return classification_result['label'], classification_result['score']
+
 # Endpoint to classify comments, posts, and messages
 @app.get("/classify/")
 async def classify_text_type(text: str, text_type: str):
