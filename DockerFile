@@ -1,20 +1,31 @@
-# Use the official Python base image
-FROM python:3.11-slim
+# Use the official Python base image with PyTorch pre-installed
+FROM pytorch/pytorch
 
+# Print the PyTorch version to ensure the correct version is installed
+RUN python -c "import torch; print(torch.__version__)"
+
+# Create a system group and user
 RUN addgroup --system madaurus && adduser --system --ingroup madaurus rabah
 
+# Set the working directory
 WORKDIR /app
 
+# Copy requirements file and install dependencies, excluding torch
 COPY requirements.txt .
-
+RUN sed -i '/torch/d' requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application code
 COPY . .
 
+# Change ownership of the application directory
 RUN chown -R rabah:madaurus /app
 
+# Switch to the new user
 USER rabah
 
+# Expose the application port
 EXPOSE 8080
 
+# Command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
